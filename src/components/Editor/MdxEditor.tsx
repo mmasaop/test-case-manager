@@ -5,6 +5,7 @@ import { EditorView } from '@codemirror/view';
 import { useFileSystemContext } from '@/contexts/FileSystemContext';
 import { MdxPreview } from './MdxPreview';
 import { EditorToolbar } from './EditorToolbar';
+import { Breadcrumb } from './Breadcrumb';
 
 export function MdxEditor() {
   const { currentFile, saveFile, isLoading } = useFileSystemContext();
@@ -70,29 +71,31 @@ export function MdxEditor() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* ヘッダー */}
-      <div className="border-b flex items-center justify-between p-2">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-medium truncate">{currentFile.path}</h3>
-          {hasChanges && (
-            <span className="text-xs text-muted-foreground">(未保存)</span>
-          )}
+      <div className="border-b p-2 space-y-2">
+        <div className="flex items-center justify-between">
+          <Breadcrumb />
+          <div className="flex items-center gap-2">
+            <EditorToolbar />
+            <button
+              onClick={handleSave}
+              disabled={!hasChanges || isLoading}
+              className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              保存 (Ctrl+S)
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <EditorToolbar />
-          <button
-            onClick={handleSave}
-            disabled={!hasChanges || isLoading}
-            className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            保存 (Ctrl+S)
-          </button>
-        </div>
+        {hasChanges && (
+          <div className="text-xs text-muted-foreground px-2">
+            ※ 未保存の変更があります
+          </div>
+        )}
       </div>
 
       {/* エディタとプレビューエリア */}
-      <div className="flex-1 flex divide-x">
+      <div className="flex-1 flex divide-x overflow-hidden">
         {/* エディタ */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-auto">
           <CodeMirror
             value={content}
             height="100%"
@@ -104,7 +107,7 @@ export function MdxEditor() {
         </div>
 
         {/* プレビュー */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-auto">
           <MdxPreview content={content} />
         </div>
       </div>

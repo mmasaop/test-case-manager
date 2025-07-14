@@ -39,34 +39,54 @@ interface FileTreeNodeProps {
 function FileTreeNode({ node, onFileClick, level, currentPath }: FileTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(level < 2);
   const [testTitle, setTestTitle] = useState<string | null>(null);
+  const [groupName, setGroupName] = useState<string | null>(null);
 
   // 現在のファイルまたはその親フォルダかどうかをチェック
   const isCurrentFile = node.type === 'file' && node.path === currentPath;
   const isParentOfCurrent = node.type === 'directory' && currentPath.startsWith(node.path + '/');
 
-  // テストケースのタイトルを取得（連番フォルダの場合）
+  // テストケースのタイトルまたはグループ名を取得
   useEffect(() => {
-    const fetchTestTitle = async () => {
-      if (node.type === 'directory' && /^\d{4}$/.test(node.name)) {
-        // 連番フォルダの場合、case.mdxファイルからタイトルを取得
-        const caseFile = node.children?.find(child => child.name === 'case.mdx' || child.name === 'case.md');
-        if (caseFile && caseFile.type === 'file') {
+    const fetchMetadata = async () => {
+      if (node.type === 'directory') {
+        // meta.mdxからグループ名を取得
+        const metaFile = node.children?.find(child => child.name === 'meta.mdx' || child.name === 'meta.md');
+        if (metaFile && metaFile.type === 'file') {
           try {
-            const handle = caseFile.handle as FileSystemFileHandle;
+            const handle = metaFile.handle as FileSystemFileHandle;
             const file = await handle.getFile();
             const content = await file.text();
             // 最初の#見出しを取得
             const titleMatch = content.match(/^#\s+(.+)$/m);
             if (titleMatch) {
-              setTestTitle(titleMatch[1]);
+              setGroupName(titleMatch[1]);
             }
           } catch (error) {
-            console.error('Failed to read test title:', error);
+            console.error('Failed to read group name:', error);
+          }
+        }
+        
+        // 連番フォルダの場合、case.mdxファイルからタイトルを取得
+        if (/^\d{4}$/.test(node.name)) {
+          const caseFile = node.children?.find(child => child.name === 'case.mdx' || child.name === 'case.md');
+          if (caseFile && caseFile.type === 'file') {
+            try {
+              const handle = caseFile.handle as FileSystemFileHandle;
+              const file = await handle.getFile();
+              const content = await file.text();
+              // 最初の#見出しを取得
+              const titleMatch = content.match(/^#\s+(.+)$/m);
+              if (titleMatch) {
+                setTestTitle(titleMatch[1]);
+              }
+            } catch (error) {
+              console.error('Failed to read test title:', error);
+            }
           }
         }
       }
     };
-    fetchTestTitle();
+    fetchMetadata();
   }, [node]);
 
   const handleClick = () => {
@@ -111,13 +131,28 @@ function FileTreeNode({ node, onFileClick, level, currentPath }: FileTreeNodePro
             <FileText className="h-4 w-4 shrink-0 text-gray-600" />
           </>
         )}
-        <span className="truncate flex-1">
-          {node.name}
-          {testTitle && (
-            <span className="ml-2 text-xs text-muted-foreground">
-              - {testTitle}
-            </span>
-          )}
+        <span className="flex-1 min-w-0">
+          <span 
+            className="break-words"
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {node.name}
+            {groupName && (
+              <span className="ml-2 text-xs text-muted-foreground">
+                ({groupName})
+              </span>
+            )}
+            {testTitle && (
+              <span className="ml-2 text-xs text-muted-foreground">
+                - {testTitle}
+              </span>
+            )}
+          </span>
         </span>
       </div>
 
