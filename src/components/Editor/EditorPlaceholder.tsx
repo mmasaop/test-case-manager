@@ -1,6 +1,33 @@
 import React from 'react';
+import { useFileSystemContext } from '@/contexts/FileSystemContext';
 
 export function EditorPlaceholder() {
+  const { currentFile, isLoading } = useFileSystemContext();
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex items-center justify-center bg-muted/20">
+        <div className="text-center space-y-4 p-8">
+          <div className="text-6xl animate-pulse">⏳</div>
+          <h2 className="text-xl font-semibold">読み込み中...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentFile) {
+    return (
+      <div className="h-full flex flex-col">
+        <div className="border-b p-4">
+          <h3 className="text-lg font-semibold">{currentFile.path}</h3>
+        </div>
+        <div className="flex-1 p-4 overflow-auto">
+          <pre className="text-sm font-mono whitespace-pre-wrap">{currentFile.content}</pre>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex items-center justify-center bg-muted/20">
       <div className="text-center space-y-4 p-8">

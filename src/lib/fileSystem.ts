@@ -84,7 +84,6 @@ export async function writeFile(
   fileHandle: FileSystemFileHandle,
   content: string
 ): Promise<void> {
-  // @ts-ignore - TypeScriptの型定義がまだ追いついていない
   const writable = await fileHandle.createWritable();
   await writable.write(content);
   await writable.close();
