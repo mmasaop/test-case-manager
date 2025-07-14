@@ -17,7 +17,7 @@ export function isFileSystemAccessSupported(): boolean {
 export async function selectDirectory(): Promise<FileSystemDirectoryHandle | null> {
   try {
     const dirHandle = await window.showDirectoryPicker({
-      mode: 'read',
+      mode: 'readwrite',
     });
     return dirHandle;
   } catch (err) {
