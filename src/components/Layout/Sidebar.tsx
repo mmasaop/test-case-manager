@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFileSystemContext } from '@/contexts/FileSystemContext';
 import { FileTree } from '../FileTree/FileTree';
+import { FileSearch } from '../FileTree/FileSearch';
+import { useFileSearch } from '@/hooks/useFileSearch';
 
 export function Sidebar() {
   const { 
@@ -12,6 +14,32 @@ export function Sidebar() {
     isLoading,
     error 
   } = useFileSystemContext();
+  
+  const { searchQuery, setSearchQuery, filterNodes } = useFileSearch(files, rootHandle);
+  const [filteredFiles, setFilteredFiles] = useState(files);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // 検索クエリまたはファイル一覧が変更されたときにフィルタリング
+  useEffect(() => {
+    const performSearch = async () => {
+      if (!searchQuery) {
+        setFilteredFiles(files);
+        return;
+      }
+
+      setIsSearching(true);
+      try {
+        const filtered = await filterNodes(files, searchQuery);
+        setFilteredFiles(filtered);
+      } catch (error) {
+        console.error('Search error:', error);
+      } finally {
+        setIsSearching(false);
+      }
+    };
+
+    performSearch();
+  }, [searchQuery, files, filterNodes]);
 
   const handleOpenFolder = async () => {
     await openDirectory();
@@ -59,14 +87,39 @@ export function Sidebar() {
         </div>
       )}
 
-      <div className="border-t pt-4 flex-1 overflow-hidden">
-        <h3 className="text-sm font-medium mb-2 px-4">ファイル一覧</h3>
+      <div className="border-t pt-4 flex-1 overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between mb-2 px-4">
+          <h3 className="text-sm font-medium">ファイル一覧</h3>
+          {searchQuery && (
+            <span className="text-xs text-muted-foreground">
+              {filteredFiles.length}件
+            </span>
+          )}
+        </div>
+        
+        {files.length > 0 && (
+          <FileSearch 
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+        )}
+        
         {files.length > 0 ? (
-          <div className="overflow-y-auto h-full">
-            <FileTree 
-              nodes={files} 
-              onFileClick={openFile}
-            />
+          <div className="overflow-y-auto flex-1">
+            {isSearching ? (
+              <div className="text-sm text-muted-foreground px-4 py-2">
+                検索中...
+              </div>
+            ) : searchQuery && filteredFiles.length === 0 ? (
+              <div className="text-sm text-muted-foreground px-4 py-2">
+                "{searchQuery}" に一致するファイルが見つかりません
+              </div>
+            ) : (
+              <FileTree 
+                nodes={filteredFiles} 
+                onFileClick={openFile}
+              />
+            )}
           </div>
         ) : (
           <div className="text-sm text-muted-foreground px-4">
