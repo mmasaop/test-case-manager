@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { FileNode } from '@/lib/fileSystem.ts';
+import { FileNode } from '@/lib/fileSystem';
 
 interface FileStore {
   rootHandle: FileSystemDirectoryHandle | null;

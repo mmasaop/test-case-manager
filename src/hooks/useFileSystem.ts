@@ -7,7 +7,7 @@ import {
   readFile,
   writeFile,
   getFileHandle,
-} from '@/lib/fileSystem.ts';
+} from '@/lib/fileSystem';
 
 export interface UseFileSystemReturn {
   isSupported: boolean;

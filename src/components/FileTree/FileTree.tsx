@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileNode } from '@/lib/fileSystem.ts';
+import { FileNode } from '@/lib/fileSystem';
 import { ChevronRight, ChevronDown, FileText, Folder, FolderOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

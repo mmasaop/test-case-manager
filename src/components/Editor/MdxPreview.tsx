@@ -131,7 +131,7 @@ export function MdxPreview({ content }: MdxPreviewProps) {
   // カスタムタグを処理するためのプリプロセッサ
   const preprocessContent = (content: string) => {
     // 自己閉じタグを処理
-    content = content.replace(/<TestResult\s+status="([^"]+)"\s*\/>/g, (match, status) => {
+    content = content.replace(/<TestResult\s+status="([^"]+)"\s*\/>/g, (_match, status) => {
       return `<TestResult status="${status}"></TestResult>`;
     });
     
