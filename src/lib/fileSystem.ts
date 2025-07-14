@@ -40,8 +40,12 @@ export async function readDirectory(
     const fullPath = path ? `${path}/${name}` : name;
     
     if (handle.kind === 'file') {
-      // MDXファイルのみを対象にする
-      if (name.endsWith('.mdx') || name.endsWith('.md')) {
+      // MDXファイルのみを対象にする（meta.mdxとREADME.mdは除外）
+      if ((name.endsWith('.mdx') || name.endsWith('.md')) && 
+          name.toLowerCase() !== 'meta.mdx' && 
+          name.toLowerCase() !== 'meta.md' &&
+          name.toLowerCase() !== 'readme.mdx' &&
+          name.toLowerCase() !== 'readme.md') {
         entries.push({
           name,
           handle,
