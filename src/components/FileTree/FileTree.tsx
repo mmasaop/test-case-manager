@@ -92,12 +92,31 @@ function FileTreeNode({ node, onFileClick, level, currentPath }: FileTreeNodePro
   const handleClick = () => {
     if (node.type === 'directory') {
       setIsExpanded(!isExpanded);
+      
+      // 0001のようなフォルダをクリックした時、中にcase.mdxが1つだけある場合は自動的に開く
+      if (node.children && node.children.length === 1) {
+        const child = node.children[0];
+        if (child.type === 'file' && child.name === 'case.mdx') {
+          onFileClick(child.path);
+        }
+      }
     } else {
       onFileClick(node.path);
     }
   };
 
   const paddingLeft = `${level * 12 + 8}px`;
+
+  // フォルダ名のラベルマッピング
+  const folderLabels: { [key: string]: string } = {
+    'auth': '認証機能',
+    'login': 'ログイン',
+    'registration': '登録',
+    'profile': 'プロフィール',
+    'settings': '設定',
+  };
+
+  const displayName = folderLabels[node.name] ? `${folderLabels[node.name]}(${node.name})` : node.name;
 
   return (
     <>
@@ -141,7 +160,7 @@ function FileTreeNode({ node, onFileClick, level, currentPath }: FileTreeNodePro
               overflow: 'hidden',
             }}
           >
-            {node.name}
+            {displayName}
             {groupName && (
               <span className="ml-2 text-xs text-muted-foreground">
                 ({groupName})

@@ -7,13 +7,16 @@ import {
   ListOrdered, 
   Quote, 
   Code, 
-  Image,
   Heading1,
   Heading2,
-  Minus
 } from 'lucide-react';
+import { ImageUpload } from './ImageUpload';
 
-export function EditorToolbar() {
+interface EditorToolbarProps {
+  onImageInsert?: (markdown: string) => void;
+}
+
+export function EditorToolbar({ onImageInsert }: EditorToolbarProps) {
   const tools = [
     { icon: Heading1, label: '見出し1', action: () => console.log('H1') },
     { icon: Heading2, label: '見出し2', action: () => console.log('H2') },
@@ -22,7 +25,6 @@ export function EditorToolbar() {
     { icon: Italic, label: '斜体', action: () => console.log('Italic') },
     { separator: true },
     { icon: Link2, label: 'リンク', action: () => console.log('Link') },
-    { icon: Image, label: '画像', action: () => console.log('Image') },
     { separator: true },
     { icon: List, label: '箇条書き', action: () => console.log('List') },
     { icon: ListOrdered, label: '番号付きリスト', action: () => console.log('Ordered List') },
@@ -52,6 +54,12 @@ export function EditorToolbar() {
           </button>
         );
       })}
+      {onImageInsert && (
+        <>
+          <div className="w-px h-5 bg-border mx-1" />
+          <ImageUpload onImageInsert={onImageInsert} />
+        </>
+      )}
     </div>
   );
 }

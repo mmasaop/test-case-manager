@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useFileSystemContext } from '@/contexts/FileSystemContext';
+import { useImageLoader } from '@/hooks/useImageLoader';
 
 interface MdxPreviewProps {
   content: string;
@@ -79,6 +81,9 @@ const BillingPreview = ({ children }: { children: React.ReactNode }) => {
 };
 
 export function MdxPreview({ content }: MdxPreviewProps) {
+  const { currentFile } = useFileSystemContext();
+  const imageUrls = useImageLoader(content, currentFile?.path);
+  
   // MDXコンポーネントをマッピング
   const components = {
     TestResult,
@@ -123,9 +128,13 @@ export function MdxPreview({ content }: MdxPreviewProps) {
     a: ({ children, ...props }: any) => (
       <a className="text-primary hover:underline" {...props}>{children}</a>
     ),
-    img: ({ alt, ...props }: any) => (
-      <img className="my-4 rounded-md max-w-full h-auto" alt={alt} {...props} />
-    ),
+    img: ({ alt, src, ...props }: any) => {
+      // 相対パスの画像をBlob URLに置換
+      const imageSrc = src?.startsWith('./') ? imageUrls.get(src) || src : src;
+      return (
+        <img className="my-4 rounded-md max-w-full h-auto" alt={alt} src={imageSrc} {...props} />
+      );
+    },
   };
 
   // カスタムタグを処理するためのプリプロセッサ
