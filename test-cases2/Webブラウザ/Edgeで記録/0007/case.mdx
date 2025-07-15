@@ -1,0 +1,114 @@
+# 印刷のポップアップが出たときweb自動化が動作するか
+
+**優先度**: low
+
+**重要度**: normal
+
+## テストステップ
+
+### ステップ 1
+
+**操作**: ※このテストの2～12の手順で作成されるスクリプトを添付
+
+**データ**: [https://drive.google.com/file/d/1E06lMA4rzkY540PdNpJfLpm8NztMYyZ-/view?usp=drive_link](https://drive.google.com/file/d/1E06lMA4rzkY540PdNpJfLpm8NztMYyZ-/view?usp=drive_link)
+
+### ステップ 2
+
+**操作**: web Edgeを起動コマンドを追加する
+
+**データ**: URL
+[http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/](http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/)
+
+### ステップ 3
+
+**操作**: 起動したEdgeで添付データの操作を記録
+
+**データ**: ・適当な要素をクリック
+
+・適当な要素をクリック
+
+・記録を終了
+
+### ステップ 4
+
+**操作**: 「web Edgeを起動コマンド」の1つ後に、キー操作コマンドを追加。
+
+添付データを入力
+
+**データ**: 登録するキー
+Ctrl + P
+
+### ステップ 5
+
+**操作**: 新規タブを追加して、web Edgeを起動コマンドを追加する
+
+**データ**: URL
+[http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/](http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/)
+
+### ステップ 6
+
+**操作**: 起動したEdgeで添付データの操作を記録
+
+**データ**: ・適当な要素をクリック
+
+・適当な要素をクリック
+
+・記録を終了
+
+### ステップ 7
+
+**操作**: 「web Edgeを起動コマンド」の1つ後に、キー操作コマンドを追加。
+
+添付データを入力
+
+**データ**: 登録するキー
+Ctrl + P
+
+### ステップ 8
+
+**操作**: EdgeでCtrl + Pで印刷のポップアップ表示する。
+
+「キー操作」の1つ後に、クリックコマンドを追加。
+印刷ポップアップをクリックコマンドでクリック
+※このときポップアップは閉じずに、ポップアップにフォーカスをあてるためクリックを行う
+
+### ステップ 9
+
+**操作**: 新規タブを追加して、web Edgeを起動コマンドを追加する
+
+**データ**: URL
+[http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/](http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/)
+
+### ステップ 10
+
+**操作**: 起動したEdgeで添付データの操作を記録
+
+**データ**: ・適当な要素をクリック
+
+・適当な要素をクリック
+
+・記録を終了
+
+### ステップ 11
+
+**操作**: 「web Edgeを起動コマンド」の1つ後に、キー操作コマンドを追加。
+
+添付データを入力
+
+**データ**: 登録するキー
+Ctrl + P
+
+### ステップ 12
+
+**操作**: EdgeでCtrl + Pで印刷のポップアップ表示する。
+
+「キー操作」の1つ後に、クリックコマンドを追加。
+印刷ポップアップの「キャンセル」ボタンをクリックコマンドでクリック
+
+### ステップ 13
+
+**操作**: 各タブでコマンドを実行
+
+**期待結果**:
+コマンド実行が完了すること
+

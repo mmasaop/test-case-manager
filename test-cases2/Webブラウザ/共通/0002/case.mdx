@@ -1,0 +1,34 @@
+# Web記録モードで追加されたコマンドのバージョン日時がロボのバージョンと同じになっているか
+
+**関連チケット**: ROBOOPE_1-1794
+
+**重要度**: normal
+
+## テストステップ
+
+### ステップ 1
+
+**操作**: Web自動化を起動してログイン操作を記録する
+
+**期待結果**:
+ログインまでに記録された一連のコマンドのコマンドオプション部分にあるバージョンが過去に作成されたものではなくテストしているバージョンになっている
+
+**データ**: [http://robo-tutorial.s3-website-ap-northeast-1.amazonaws.com/web/table/](http://robo-tutorial.s3-website-ap-northeast-1.amazonaws.com/web/table/)
+ユーザー名パスはなんでもいいので入力すればログイン可能
+
+### ステップ 2
+
+**操作**: テーブル操作を記録する
+
+**期待結果**:
+コマンドオプション部分にあるバージョンが過去に作成されたものではなくテストしているバージョンになっている
+
+### ステップ 3
+
+**操作**: じゃらんページへ行き、カレンダー入力を記録する
+
+**期待結果**:
+コマンドオプション部分にあるバージョンが過去に作成されたものではなくテストしているバージョンになっている
+
+**データ**: [https://www.jalan.net/?vos=evjlnpg0023&cxlt=n7lqmdjzmvlsm2k02zw2y82hq2ng&pog=mt_e_kw_kwd-300967892776_dv_c_cr_591685079658_gp_54224622187_cm_1047800524&gad_source=1&gclid=EAIaIQobChMIv9y-i7P8iQMV5BF7Bx187Cl1EAAYBCAAEgL60_D_BwE&gclsrc=aw.ds](https://www.jalan.net/?vos=evjlnpg0023&cxlt=n7lqmdjzmvlsm2k02zw2y82hq2ng&pog=mt_e_kw_kwd-300967892776_dv_c_cr_591685079658_gp_54224622187_cm_1047800524&gad_source=1&gclid=EAIaIQobChMIv9y-i7P8iQMV5BF7Bx187Cl1EAAYBCAAEgL60_D_BwE&gclsrc=aw.ds)
+

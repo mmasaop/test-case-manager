@@ -3,6 +3,7 @@ import { useFileSystemContext } from '@/contexts/FileSystemContext';
 import { FileTree } from '../FileTree/FileTree';
 import { FileSearch } from '../FileTree/FileSearch';
 import { useFileSearch } from '@/hooks/useFileSearch';
+import { useUrlParams } from '@/hooks/useUrlParams';
 
 export function Sidebar() {
   const { 
@@ -18,6 +19,21 @@ export function Sidebar() {
   const { searchQuery, setSearchQuery, filterNodes } = useFileSearch(files, rootHandle);
   const [filteredFiles, setFilteredFiles] = useState(files);
   const [isSearching, setIsSearching] = useState(false);
+  const { folderPath } = useUrlParams();
+  const [autoOpened, setAutoOpened] = useState(false);
+
+  // URLパラメータがある場合、自動的にフォルダを開く
+  useEffect(() => {
+    if (folderPath && !autoOpened && !rootHandle) {
+      const showAutoOpenMessage = async () => {
+        // ユーザーにフォルダ選択を促す
+        alert(`次のフォルダを選択してください: ${folderPath}`);
+        await openDirectory();
+        setAutoOpened(true);
+      };
+      showAutoOpenMessage();
+    }
+  }, [folderPath, autoOpened, rootHandle, openDirectory]);
 
   // 検索クエリまたはファイル一覧が変更されたときにフィルタリング
   useEffect(() => {
@@ -77,6 +93,12 @@ export function Sidebar() {
         {rootHandle && (
           <div className="text-xs text-muted-foreground px-4">
             現在のフォルダ: {rootHandle.name}
+          </div>
+        )}
+        
+        {folderPath && !rootHandle && (
+          <div className="text-xs text-muted-foreground px-4">
+            URL指定パス: {folderPath}
           </div>
         )}
       </div>

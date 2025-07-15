@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileNode } from '@/lib/fileSystem';
-import { ChevronRight, ChevronDown, FileText, Folder, FolderOpen } from 'lucide-react';
+import { ChevronRight, ChevronDown, FileText, Folder, FolderOpen, Image } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useFileSystemContext } from '@/contexts/FileSystemContext';
 
@@ -89,15 +89,19 @@ function FileTreeNode({ node, onFileClick, level, currentPath }: FileTreeNodePro
     fetchMetadata();
   }, [node]);
 
+  // case.mdxファイルを持つディレクトリかチェック
+  const hasCaseMdx = node.type === 'directory' && 
+    node.children?.some(child => child.type === 'file' && child.name === 'case.mdx');
+  
   const handleClick = () => {
     if (node.type === 'directory') {
       setIsExpanded(!isExpanded);
       
-      // 0001のようなフォルダをクリックした時、中にcase.mdxが1つだけある場合は自動的に開く
-      if (node.children && node.children.length === 1) {
-        const child = node.children[0];
-        if (child.type === 'file' && child.name === 'case.mdx') {
-          onFileClick(child.path);
+      // case.mdxがある場合は自動的に開く
+      if (hasCaseMdx) {
+        const caseFile = node.children?.find(child => child.name === 'case.mdx');
+        if (caseFile) {
+          onFileClick(caseFile.path);
         }
       }
     } else {
@@ -116,6 +120,9 @@ function FileTreeNode({ node, onFileClick, level, currentPath }: FileTreeNodePro
     'settings': '設定',
   };
 
+  // 数字フォルダかどうかをチェック
+  const isNumberedFolder = /^\d{4}$/.test(node.name);
+  
   const displayName = folderLabels[node.name] ? `${folderLabels[node.name]}(${node.name})` : node.name;
 
   return (
@@ -137,7 +144,9 @@ function FileTreeNode({ node, onFileClick, level, currentPath }: FileTreeNodePro
             ) : (
               <ChevronRight className="h-4 w-4 shrink-0" />
             )}
-            {isExpanded ? (
+            {hasCaseMdx ? (
+              <FileText className="h-4 w-4 shrink-0 text-purple-600" />
+            ) : isExpanded ? (
               <FolderOpen className="h-4 w-4 shrink-0 text-blue-600" />
             ) : (
               <Folder className="h-4 w-4 shrink-0 text-blue-600" />
@@ -160,27 +169,56 @@ function FileTreeNode({ node, onFileClick, level, currentPath }: FileTreeNodePro
               overflow: 'hidden',
             }}
           >
-            {displayName}
-            {groupName && (
-              <span className="ml-2 text-xs text-muted-foreground">
-                ({groupName})
-              </span>
-            )}
-            {testTitle && (
-              <span className="ml-2 text-xs text-muted-foreground">
-                - {testTitle}
-              </span>
+            {isNumberedFolder && testTitle ? (
+              <>
+                <span className="text-xs text-muted-foreground mr-2">{displayName}</span>
+                <span className="text-sm text-foreground">{testTitle}</span>
+              </>
+            ) : (
+              <>
+                {displayName}
+                {groupName && (
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    ({groupName})
+                  </span>
+                )}
+                {testTitle && !isNumberedFolder && (
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    - {testTitle}
+                  </span>
+                )}
+              </>
             )}
           </span>
         </span>
       </div>
 
-      {node.type === 'directory' && isExpanded && node.children && (
-        <FileTree
-          nodes={node.children}
-          onFileClick={onFileClick}
-          level={level + 1}
-        />
+      {node.type === 'directory' && isExpanded && (
+        <>
+          {/* 画像ファイルの表示 */}
+          {node.imageFiles && node.imageFiles.length > 0 && (
+            <div style={{ paddingLeft: `${(level + 1) * 12 + 8}px` }} className="py-1">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Image className="h-3 w-3" />
+                <span>画像ファイル:</span>
+                {node.imageFiles.map((img, idx) => (
+                  <span key={img.path} className="text-xs">
+                    {img.name}{idx < node.imageFiles!.length - 1 ? ', ' : ''}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* 子ノードの表示（case.mdxは除外） */}
+          {node.children && (
+            <FileTree
+              nodes={hasCaseMdx ? node.children.filter(child => child.name !== 'case.mdx') : node.children}
+              onFileClick={onFileClick}
+              level={level + 1}
+            />
+          )}
+        </>
       )}
     </>
   );

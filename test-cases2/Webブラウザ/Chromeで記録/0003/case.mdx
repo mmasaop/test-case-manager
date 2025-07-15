@@ -1,0 +1,37 @@
+# URLにPDFファイルを指定した場合でもWeb自動化記録が可能
+
+**優先度**: high
+
+**重要度**: normal
+
+## テストステップ
+
+### ステップ 1
+
+**操作**: 以下URLを指定し、Web自動化記録を開始する
+
+**データ**: [https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf](https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf)
+
+### ステップ 2
+
+**操作**: 任意の操作を記録する
+
+**期待結果**:
+・以下オーバーレイメッセージが表示されず、記録できること
+「最後に開いたタブでのみ、自動化したい操作を記録できます。」
+
+### ステップ 3
+
+**操作**: Web自動化記録UIで、 タブを閉じる を押下する
+
+**期待結果**:
+・タブが閉じること
+・以下オーバーレイメッセージが表示されず、操作を記録できること
+「最後に開いたタブでのみ、自動化したい操作を記録できます。」
+
+### ステップ 4
+
+**操作**: 以下スクリプトを実行し、正常終了すること
+
+**データ**: [https://drive.google.com/file/d/1IstS5nX8H5IbbpkSYJsqU7SJtB2R-3wQ/view?usp=sharing](https://drive.google.com/file/d/1IstS5nX8H5IbbpkSYJsqU7SJtB2R-3wQ/view?usp=sharing)
+

@@ -1,0 +1,83 @@
+# ダウンロード完了のポップアップが出たときweb自動化が動作するか
+
+**優先度**: low
+
+**重要度**: normal
+
+## テストステップ
+
+### ステップ 1
+
+**操作**: ※このテストの2～7の手順で作成されるスクリプトを添付
+
+**データ**: [https://drive.google.com/file/d/1i4w-c5NrgrSZQo1FGqOV9nc7nQvPs3YY/view?usp=drive_link](https://drive.google.com/file/d/1i4w-c5NrgrSZQo1FGqOV9nc7nQvPs3YY/view?usp=drive_link)
+
+### ステップ 2
+
+**操作**: web Edgeを起動コマンドを追加する
+
+**データ**: URL
+[http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/](http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/)
+
+### ステップ 3
+
+**操作**: 起動したEdgeで添付データの操作を記録
+
+**データ**: ・「EXEダウンロードボタン」ボタンをクリック
+
+・適当な要素をクリック
+
+・適当な要素をクリック
+
+・記録を終了
+
+### ステップ 4
+
+**操作**: 新規タブを追加して、web Edgeを起動コマンドを追加する
+
+**データ**: URL
+[http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/](http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/)
+
+### ステップ 5
+
+**操作**: 起動したEdgeで添付データの操作を記録
+
+**データ**: ・「EXEダウンロードボタン」ボタンをクリック
+
+・ダウンロード完了時に出てくるポップアップをクリックコマンドでクリック
+※このときポップアップは閉じずに、ポップアップにフォーカスをあてるためクリックを行う
+
+・適当な要素をクリック
+
+・適当な要素をクリック
+
+・記録を終了
+
+### ステップ 6
+
+**操作**: 新規タブを追加して、web Edgeを起動コマンドを追加する
+
+**データ**: URL
+[http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/](http://web-test-resource.s3-website-ap-northeast-1.amazonaws.com/unit/common/all-component/)
+
+### ステップ 7
+
+**操作**: 起動したEdgeで添付データの操作を記録
+
+**データ**: ・「EXEダウンロードボタン」ボタンをクリック
+
+・ダウンロード完了時に出てくるポップアップをキー操作 or クリックコマンドで閉じる
+
+・適当な要素をクリック
+
+・適当な要素をクリック
+
+・記録を終了
+
+### ステップ 8
+
+**操作**: 各タブでコマンドを実行
+
+**期待結果**:
+コマンド実行が完了すること
+

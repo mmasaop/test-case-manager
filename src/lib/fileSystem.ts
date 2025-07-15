@@ -6,11 +6,41 @@ export interface FileNode {
   type: 'file' | 'directory';
   children?: FileNode[];
   path: string;
+  imageFiles?: FileNode[];
 }
 
 // ブラウザがFile System Access APIをサポートしているかチェック
 export function isFileSystemAccessSupported(): boolean {
   return 'showDirectoryPicker' in window;
+}
+
+// 特定のパスのディレクトリハンドルを取得（開発用）
+export async function getDirectoryHandleFromPath(path: string): Promise<FileSystemDirectoryHandle | null> {
+  try {
+    // Chrome/Edgeの拡張機能やローカル開発環境でのみ動作
+    // 通常のWebアプリでは動作しません
+    if ('showDirectoryPicker' in window) {
+      // デバッグ用：最後に開いたディレクトリを保存
+      const lastOpenedPath = localStorage.getItem('lastOpenedPath');
+      
+      if (lastOpenedPath === path) {
+        // 同じパスの場合は、ユーザーに再度選択してもらう
+        const handle = await window.showDirectoryPicker({
+          mode: 'readwrite',
+          startIn: 'documents',
+        });
+        
+        // パスを保存
+        localStorage.setItem('lastOpenedPath', path);
+        return handle;
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Failed to get directory handle from path:', error);
+    return null;
+  }
 }
 
 // ディレクトリを選択
@@ -35,13 +65,23 @@ export async function readDirectory(
   path: string = ''
 ): Promise<FileNode[]> {
   const entries: FileNode[] = [];
+  const currentDirImages: FileNode[] = [];
 
   for await (const [name, handle] of dirHandle) {
     const fullPath = path ? `${path}/${name}` : name;
     
     if (handle.kind === 'file') {
+      // 画像ファイルの検出
+      if (name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+        currentDirImages.push({
+          name,
+          handle,
+          type: 'file',
+          path: fullPath,
+        });
+      }
       // MDXファイルのみを対象にする（meta.mdxとREADME.mdは除外）
-      if ((name.endsWith('.mdx') || name.endsWith('.md')) && 
+      else if ((name.endsWith('.mdx') || name.endsWith('.md')) && 
           name.toLowerCase() !== 'meta.mdx' && 
           name.toLowerCase() !== 'meta.md' &&
           name.toLowerCase() !== 'readme.mdx' &&
@@ -57,13 +97,30 @@ export async function readDirectory(
       // 隠しディレクトリをスキップ
       if (!name.startsWith('.')) {
         const children = await readDirectory(handle as FileSystemDirectoryHandle, fullPath);
-        entries.push({
+        const dirNode: FileNode = {
           name,
           handle,
           type: 'directory',
           children,
           path: fullPath,
-        });
+        };
+        
+        // 現在のディレクトリ直下の画像を確認
+        for await (const [childName, childHandle] of handle as FileSystemDirectoryHandle) {
+          if (childHandle.kind === 'file' && childName.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+            if (!dirNode.imageFiles) {
+              dirNode.imageFiles = [];
+            }
+            dirNode.imageFiles.push({
+              name: childName,
+              handle: childHandle,
+              type: 'file',
+              path: `${fullPath}/${childName}`,
+            });
+          }
+        }
+        
+        entries.push(dirNode);
       }
     }
   }

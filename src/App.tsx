@@ -4,16 +4,21 @@ import { EditorPlaceholder } from './components/Editor/EditorPlaceholder';
 import { MdxEditor } from './components/Editor/MdxEditor';
 import { FileSystemProvider } from './contexts/FileSystemContext';
 import { useFileSystemContext } from './contexts/FileSystemContext';
+import { DebugPanel } from './components/DebugPanel';
 
 function AppContent() {
   const { currentFile } = useFileSystemContext();
+  const showDebug = new URLSearchParams(window.location.search).has('debug');
   
   return (
-    <MainLayout
-      sidebar={<Sidebar />}
-    >
-      {currentFile ? <MdxEditor /> : <EditorPlaceholder />}
-    </MainLayout>
+    <>
+      <MainLayout
+        sidebar={<Sidebar />}
+      >
+        {currentFile ? <MdxEditor /> : <EditorPlaceholder />}
+      </MainLayout>
+      {showDebug && <DebugPanel />}
+    </>
   );
 }
 
