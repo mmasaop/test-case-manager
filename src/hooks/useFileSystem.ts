@@ -36,6 +36,7 @@ export function useFileSystem(): UseFileSystemReturn {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPickerActive, setIsPickerActive] = useState(false);
 
   const isSupported = isFileSystemAccessSupported();
 
@@ -45,13 +46,20 @@ export function useFileSystem(): UseFileSystemReturn {
       return;
     }
 
+    if (isPickerActive) {
+      console.warn('File picker is already active');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
+    setIsPickerActive(true);
 
     try {
       const handle = await selectDirectory();
       if (!handle) {
         setIsLoading(false);
+        setIsPickerActive(false);
         return;
       }
 
@@ -59,11 +67,17 @@ export function useFileSystem(): UseFileSystemReturn {
       const fileTree = await readDirectory(handle);
       setFiles(fileTree);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to open directory');
+      // ピッカーが既にアクティブな場合のエラーを特別に処理
+      if (err instanceof Error && err.name === 'InvalidStateError') {
+        setError('ファイル選択ダイアログが既に開いています。閉じてから再度お試しください。');
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to open directory');
+      }
     } finally {
       setIsLoading(false);
+      setIsPickerActive(false);
     }
-  }, [isSupported]);
+  }, [isSupported, isPickerActive]);
 
   const openFile = useCallback(async (path: string) => {
     if (!rootHandle) {

@@ -22,18 +22,14 @@ export function Sidebar() {
   const { folderPath } = useUrlParams();
   const [autoOpened, setAutoOpened] = useState(false);
 
-  // URLパラメータがある場合、自動的にフォルダを開く
+  // URLパラメータがある場合、メッセージを表示
   useEffect(() => {
     if (folderPath && !autoOpened && !rootHandle) {
-      const showAutoOpenMessage = async () => {
-        // ユーザーにフォルダ選択を促す
-        alert(`次のフォルダを選択してください: ${folderPath}`);
-        await openDirectory();
-        setAutoOpened(true);
-      };
-      showAutoOpenMessage();
+      // alertのみ表示し、ユーザーの手動操作を待つ
+      alert(`次のフォルダを選択してください: ${folderPath}`);
+      setAutoOpened(true);
     }
-  }, [folderPath, autoOpened, rootHandle, openDirectory]);
+  }, [folderPath, autoOpened, rootHandle]);
 
   // 検索クエリまたはファイル一覧が変更されたときにフィルタリング
   useEffect(() => {
