@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileNode } from '@/lib/fileSystem';
-import { ChevronRight, ChevronDown, FileText, Folder, FolderOpen, Image } from 'lucide-react';
+import { ChevronRight, ChevronDown, FileText, Folder, FolderOpen, Image, File, FileArchive } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useFileSystemContext } from '@/contexts/FileSystemContext';
 
@@ -198,27 +198,24 @@ function FileTreeNode({ node, onFileClick, level, currentPath, isSearching }: Fi
 
       {node.type === 'directory' && isExpanded && (
         <>
-          {/* 画像ファイルの表示 */}
+          {/* 添付ファイルの表示 */}
           {node.imageFiles && node.imageFiles.length > 0 && (
-            <div style={{ paddingLeft: `${(level + 1) * 12 + 8}px` }} className="py-1">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Image className="h-3 w-3" />
-                <span>画像ファイル:</span>
-                {node.imageFiles.map((img, idx) => (
-                  <span key={img.path} className="text-xs">
-                    {img.name}{idx < node.imageFiles!.length - 1 ? ', ' : ''}
-                  </span>
-                ))}
-              </div>
+            <div style={{ paddingLeft: `${(level + 1) * 12 + 8}px` }} className="space-y-1 py-1">
+              {node.imageFiles.map((file) => (
+                <AttachmentFileNode
+                  key={file.path}
+                  file={file}
+                  onFileClick={onFileClick}
+                  level={level + 1}
+                />
+              ))}
             </div>
           )}
           
-          {/* 子ノードの表示（通常時はcase.mdxを除外、検索時は表示） */}
+          {/* 子ノードの表示（case.mdxは常に除外） */}
           {node.children && (
             <FileTree
-              nodes={hasCaseMdx && !isSearching ? 
-                node.children.filter(child => child.name !== 'case.mdx') : 
-                node.children}
+              nodes={node.children.filter(child => child.name !== 'case.mdx')}
               onFileClick={onFileClick}
               level={level + 1}
               isSearching={isSearching}
@@ -227,5 +224,45 @@ function FileTreeNode({ node, onFileClick, level, currentPath, isSearching }: Fi
         </>
       )}
     </>
+  );
+}
+
+// 添付ファイルノードコンポーネント
+interface AttachmentFileNodeProps {
+  file: FileNode;
+  onFileClick: (path: string) => void;
+  level: number;
+}
+
+function AttachmentFileNode({ file, onFileClick, level }: AttachmentFileNodeProps) {
+  const paddingLeft = `${level * 12 + 8}px`;
+  
+  // ファイルタイプを判定
+  const getFileType = (filename: string) => {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext || '')) return 'image';
+    if (['txt', 'log', 'json', 'xml', 'csv', 'yaml', 'yml'].includes(ext || '')) return 'text';
+    if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext || '')) return 'archive';
+    return 'other';
+  };
+  
+  const fileType = getFileType(file.name);
+  const icon = fileType === 'image' ? Image : 
+               fileType === 'archive' ? FileArchive : 
+               File;
+  const IconComponent = icon;
+  
+  return (
+    <div
+      className="flex items-center gap-1 py-1 px-2 hover:bg-accent hover:text-accent-foreground cursor-pointer text-sm transition-colors duration-150"
+      style={{ paddingLeft }}
+      onClick={() => onFileClick(file.path)}
+    >
+      <div className="w-4" />
+      <IconComponent className="h-4 w-4 shrink-0 text-gray-600" />
+      <span className="flex-1 min-w-0">
+        <span className="break-words">{file.name}</span>
+      </span>
+    </div>
   );
 }

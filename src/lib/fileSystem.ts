@@ -71,22 +71,22 @@ export async function readDirectory(
     const fullPath = path ? `${path}/${name}` : name;
     
     if (handle.kind === 'file') {
-      // 画像ファイルの検出
-      if (name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
-        currentDirImages.push({
+      // MDXファイルのみを対象にする（meta.mdxとREADME.mdは除外）
+      if ((name.endsWith('.mdx') || name.endsWith('.md')) && 
+          name.toLowerCase() !== 'meta.mdx' && 
+          name.toLowerCase() !== 'meta.md' &&
+          name.toLowerCase() !== 'readme.mdx' &&
+          name.toLowerCase() !== 'readme.md') {
+        entries.push({
           name,
           handle,
           type: 'file',
           path: fullPath,
         });
       }
-      // MDXファイルのみを対象にする（meta.mdxとREADME.mdは除外）
-      else if ((name.endsWith('.mdx') || name.endsWith('.md')) && 
-          name.toLowerCase() !== 'meta.mdx' && 
-          name.toLowerCase() !== 'meta.md' &&
-          name.toLowerCase() !== 'readme.mdx' &&
-          name.toLowerCase() !== 'readme.md') {
-        entries.push({
+      // その他のファイル（画像、テキスト、ZIP等）を添付ファイルとして扱う
+      else if (!name.startsWith('.') && name !== 'case.mdx') {
+        currentDirImages.push({
           name,
           handle,
           type: 'file',
@@ -105,9 +105,13 @@ export async function readDirectory(
           path: fullPath,
         };
         
-        // 現在のディレクトリ直下の画像を確認
+        // 現在のディレクトリ直下の添付ファイルを確認
         for await (const [childName, childHandle] of handle as FileSystemDirectoryHandle) {
-          if (childHandle.kind === 'file' && childName.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+          if (childHandle.kind === 'file' && 
+              !childName.startsWith('.') && 
+              childName !== 'case.mdx' &&
+              !childName.endsWith('.mdx') && 
+              !childName.endsWith('.md')) {
             if (!dirNode.imageFiles) {
               dirNode.imageFiles = [];
             }
