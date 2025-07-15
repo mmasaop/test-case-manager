@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { FileNode } from '@/lib/fileSystem';
 
-export function useFileSearch(files: FileNode[], rootHandle: FileSystemDirectoryHandle | null) {
+export function useFileSearch() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchCache, setSearchCache] = useState<Map<string, string>>(new Map());
 
@@ -36,6 +36,15 @@ export function useFileSearch(files: FileNode[], rootHandle: FileSystemDirectory
     if (node.type === 'file' && (node.name.endsWith('.mdx') || node.name.endsWith('.md'))) {
       const content = await getFileContent(node);
       return content.toLowerCase().includes(lowerQuery);
+    }
+
+    // ディレクトリの場合、中にcase.mdxがあればその内容も検索
+    if (node.type === 'directory' && node.children) {
+      const caseFile = node.children.find(child => child.name === 'case.mdx');
+      if (caseFile && caseFile.type === 'file') {
+        const content = await getFileContent(caseFile);
+        return content.toLowerCase().includes(lowerQuery);
+      }
     }
 
     return false;

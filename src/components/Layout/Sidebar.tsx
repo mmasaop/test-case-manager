@@ -16,7 +16,7 @@ export function Sidebar() {
     error 
   } = useFileSystemContext();
   
-  const { searchQuery, setSearchQuery, filterNodes } = useFileSearch(files, rootHandle);
+  const { searchQuery, setSearchQuery, filterNodes } = useFileSearch();
   const [filteredFiles, setFilteredFiles] = useState(files);
   const [isSearching, setIsSearching] = useState(false);
   const { folderPath } = useUrlParams();
@@ -140,6 +140,7 @@ export function Sidebar() {
               <FileTree 
                 nodes={filteredFiles} 
                 onFileClick={openFile}
+                isSearching={!!searchQuery}
               />
             )}
           </div>

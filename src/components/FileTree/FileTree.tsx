@@ -8,9 +8,10 @@ interface FileTreeProps {
   nodes: FileNode[];
   onFileClick: (path: string) => void;
   level?: number;
+  isSearching?: boolean;
 }
 
-export function FileTree({ nodes, onFileClick, level = 0 }: FileTreeProps) {
+export function FileTree({ nodes, onFileClick, level = 0, isSearching = false }: FileTreeProps) {
   const { currentFile } = useFileSystemContext();
   const currentPath = currentFile?.path || '';
 
@@ -23,6 +24,7 @@ export function FileTree({ nodes, onFileClick, level = 0 }: FileTreeProps) {
           onFileClick={onFileClick}
           level={level}
           currentPath={currentPath}
+          isSearching={isSearching}
         />
       ))}
     </div>
@@ -34,9 +36,10 @@ interface FileTreeNodeProps {
   onFileClick: (path: string) => void;
   level: number;
   currentPath: string;
+  isSearching: boolean;
 }
 
-function FileTreeNode({ node, onFileClick, level, currentPath }: FileTreeNodeProps) {
+function FileTreeNode({ node, onFileClick, level, currentPath, isSearching }: FileTreeNodeProps) {
   const [isExpanded, setIsExpanded] = useState(level < 2);
   const [testTitle, setTestTitle] = useState<string | null>(null);
   const [groupName, setGroupName] = useState<string | null>(null);
@@ -210,12 +213,15 @@ function FileTreeNode({ node, onFileClick, level, currentPath }: FileTreeNodePro
             </div>
           )}
           
-          {/* 子ノードの表示（case.mdxは除外） */}
+          {/* 子ノードの表示（通常時はcase.mdxを除外、検索時は表示） */}
           {node.children && (
             <FileTree
-              nodes={hasCaseMdx ? node.children.filter(child => child.name !== 'case.mdx') : node.children}
+              nodes={hasCaseMdx && !isSearching ? 
+                node.children.filter(child => child.name !== 'case.mdx') : 
+                node.children}
               onFileClick={onFileClick}
               level={level + 1}
+              isSearching={isSearching}
             />
           )}
         </>
